@@ -6,15 +6,28 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.lucene.search.Query;
+
 import DataStructures.EntityProfile;
+import info.debatty.java.stringsimilarity.Jaccard;
 
 public class main {
+
+
+	public static double computeSimilarity(Set<String> TokensSource, Set<String> TokensTarget) {
+		Set<String> intersection = new HashSet<String>(TokensSource);
+		intersection.retainAll(TokensTarget);
+
+		return ((double)intersection.size())/Math.min(TokensSource.size(), TokensTarget.size());
+	}
+
 	public static void main(String[] args) {
 		ArrayList<EntityProfile> EntityListSource = null;
 		ArrayList<EntityProfile> EntityListTarget = null;
 
 		String INPUT_PATH1 = "inputs/dataset1_abt";
 		String INPUT_PATH2 = "inputs/dataset2_buy";
+		Jaccard jaccard = new Jaccard();
 
 
 		// reading the files
@@ -31,6 +44,8 @@ public class main {
 
 			//token blocking
 			Map<String, Set<EntityProfile>> tokenBlocking = new HashMap<String, Set<EntityProfile>>();
+			Map<String, Set<EntityProfile>> metablocking = new HashMap<String, Set<EntityProfile>>();
+
 
 			for (EntityProfile entitySource : EntityListSource) {
 				for (String token : entitySource.generateTokens()) {
@@ -74,6 +89,24 @@ public class main {
 
 			//Poda 
 			//Vão remover todos os pares de entidades com similaridade < 0.2
+			for (String token : tokenBlocking.keySet()) {
+				for (EntityProfile entity : tokenBlocking.get(token))
+					if(jaccard.similarity(token, entity.toString()) > 0.2) {
+						Set<EntityProfile> set =  new HashSet<EntityProfile>();
+						set.add(entity);
+						metablocking.put(token, set);
+
+					}
+			}
+//			System.out.println(tokenBlocking.size());
+//			System.out.println(metablocking.size());
+
+//			for (String token : tokenBlocking.keySet()) {
+//				System.out.println(token + ": " + tokenBlocking.get(token));
+//			}
+			for (String token : metablocking.keySet()) {
+				System.out.println(token + ": " + tokenBlocking.get(token));
+			}
 
 
 
@@ -83,11 +116,10 @@ public class main {
 		}
 	}
 
-	private double computeSimilarity(Set<String> TokensSource, Set<String> TokensTarget) {
-		Set<String> intersection = new HashSet<String>(TokensSource);
-		intersection.retainAll(TokensTarget);
 
-		return ((double)intersection.size())/Math.min(TokensSource.size(), TokensTarget.size());
+	public void tokenblocking() {
+
 	}
+
 
 }

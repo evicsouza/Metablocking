@@ -16,5 +16,6 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/eva_v/Downloads/jar_files/java-string-similarity-2.0.0.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
